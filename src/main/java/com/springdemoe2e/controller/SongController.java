@@ -1,6 +1,8 @@
 package com.springdemoe2e.controller;
 
 import com.springdemoe2e.exception.ResourceNotFoundException;
+import com.springdemoe2e.model.Song;
+import com.springdemoe2e.service.SongService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,23 +10,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/songs")
-@Profile("test")
+//@Profile("test")
 public class SongController {
+
+    private SongService songService;
+
+    public SongController(SongService songService) {
+        this.songService = songService;
+    }
+
 
     /**
      * Get all songs
      */
     @GetMapping
-    public ResponseEntity<Map<String, String>> getAllSongs() {
-        System.out.println("Getting all songs from dev profile");
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("message", "All songs retrieved successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<Song>> getAllSongs() {
+        List<Song> allSongs = songService.getAllSongs();// Call the service method to retrieve all songs
+        return ResponseEntity.ok(allSongs);
     }
 
     /**
