@@ -3,7 +3,6 @@ package com.springdemoe2e.controller;
 import com.springdemoe2e.exception.ResourceNotFoundException;
 import com.springdemoe2e.model.Song;
 import com.springdemoe2e.service.SongService;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,7 @@ import java.util.Map;
 //@Profile("test")
 public class SongController {
 
-    private SongService songService;
+    private final SongService songService;
 
     public SongController(SongService songService) {
         this.songService = songService;
@@ -40,7 +39,6 @@ public class SongController {
      */
     @GetMapping("/{songId}")
     public ResponseEntity<Map<String, String>> getSongById(@PathVariable Long songId) {
-        System.out.println("Getting song with ID: " + songId);
         
         // Simulate validation - throw exception if ID is invalid
         if (songId == null || songId <= 0) {
