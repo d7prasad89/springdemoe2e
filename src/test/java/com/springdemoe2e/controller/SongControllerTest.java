@@ -1,37 +1,60 @@
 package com.springdemoe2e.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.springdemoe2e.model.Song;
+import com.springdemoe2e.service.SongService;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.List;
 
-@SpringBootTest
-@ActiveProfiles("test")
+import static org.mockito.Mockito.when;
+
+
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(SongController.class)
 class SongControllerTest {
 
-    @BeforeEach
-    void setUp() {
-        System.out.println("Setting up test with H2 database...");
-    }
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private SongService songService;
 
     @Test
-    void testSongControllerLoads() {
-        // Verify controller is instantiated
-        assertNotNull(this, "SongControllerTest initialized successfully");
-    }
+    void testGetAllSongs() throws Exception {
+        // Mock the service to return a list of songs
+        Song song1 = new Song();
+        song1.setId(Long.valueOf(1L));
+        song1.setTitle("Song 1");
+        song1.setArtist("Artist 1");
 
-    @Test
-    void testH2DatabaseConfiguration() {
-        // Test that H2 database is configured for this test
-        System.out.println("Running test with H2 in-memory database");
-        assertTrue(true, "H2 database is active for testing");
-    }
+        Song song2 = new Song();
+        song2.setId(Long.valueOf(2L));
+        song2.setTitle("Song 2");
+        song2.setArtist("Artist 2");
 
-    @Test
-    void getAllSongs() {
-        System.out.println("Test: Get all songs");
-        assertNotNull("Success");
+        List<Song> songs = Arrays.asList(song1, song2);
+
+        when(songService.getAllSongs()).thenReturn(songs);
+
+        // Perform GET request and verify
+        mockMvc.perform(get("/api/songs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].title", is("Song 1")))
+                .andExpect(jsonPath("$[1].id", is(2)))
+                .andExpect(jsonPath("$[1].title", is("Song 2")));
+
+        verify(songService, times(1)).getAllSongs();
     }
 }
