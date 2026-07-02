@@ -3,6 +3,7 @@ package com.springdemoe2e.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.Objects;
 
@@ -20,9 +21,12 @@ public class Song {
     private String album;
     private String artist;
 
-    @Column(name = "is_favorite")
-    private Boolean isFavorite;
+    @Column(name = "is_favorite", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isFavorite = false;
     private String title;
+
+    @Column(name = "length_in_seconds")
+    private Integer lengthInSeconds;
 
     @Override
     public final boolean equals(Object o) {
